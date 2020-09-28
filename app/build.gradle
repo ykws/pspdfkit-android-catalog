@@ -1,0 +1,98 @@
+/*
+ *   Copyright © 2014-2020 PSPDFKit GmbH. All rights reserved.
+ *
+ *   The PSPDFKit Sample applications are licensed with a modified BSD license.
+ *   Please see License for details. This notice may not be removed from this file.
+ */
+
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+
+// Include PSPDFKit library and version numbers.
+apply from: 'pspdfkit.gradle'
+
+android {
+    compileSdkVersion COMPILE_SDK_VERSION
+    buildToolsVersion BUILD_TOOLS_VERSION
+
+    defaultConfig {
+        applicationId "com.pspdfkit.catalog"
+        minSdkVersion MIN_SDK_VERSION
+        targetSdkVersion TARGET_SDK_VERSION
+        multiDexEnabled true
+
+        // See 'pspdfkit.gradle' for version information.
+        versionCode PSPDFKIT_VERSION_CODE
+        versionName PSPDFKIT_VERSION
+
+        resValue "string", "PSPDFKIT_LICENSE_KEY", "\"LICENSE_KEY_GOES_HERE\""
+        resValue "string", "YOUTUBE_API_KEY", "\"YOUTUBE_API_KEY_GOES_HERE\""
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    buildTypes {
+        debug {
+            multiDexKeepFile file('multidex/multidex-config.txt')
+            minifyEnabled false
+            zipAlignEnabled true
+            debuggable true
+        }
+    }
+
+    sourceSets {
+        main {
+            java {
+                // Add support for separate Kotlin files.
+                srcDir 'src/main/kotlin'
+            }
+        }
+    }
+}
+
+dependencies {
+
+    // Multidex support library for running the Catalog app without the need for minification on devices < API 21
+    implementation "androidx.multidex:multidex:${MULTIDEX_LIBRARIES_VERSION}"
+
+    // YouTube player (inline videos).
+    implementation files('libs/YouTubeAndroidPlayerApi.jar')
+
+    // Picasso (image loading for inline galleries).
+    implementation "com.squareup.picasso:picasso:${PICASSO_VERSION}"
+
+    // Retrofit and Gson required by Instant examples.
+    implementation "com.squareup.retrofit2:retrofit:${RETROFIT_VERSION}"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:${RETROFIT_VERSION}"
+    implementation "com.squareup.retrofit2:converter-gson:${RETROFIT_VERSION}"
+    implementation "com.google.code.gson:gson:${GSON_VERSION}"
+
+    // Barcode Scanner
+    implementation "me.dm7.barcodescanner:zxing:${BARCODE_SCANNER_VERSION}"
+
+    // Kotlin utils.
+    implementation "io.reactivex.rxjava2:rxkotlin:${RXKOTLIN_VERSION}"
+}
+
+configurations.all {
+    resolutionStrategy {
+        force "androidx.multidex:multidex-instrumentation:${MULTIDEX_LIBRARIES_VERSION}"
+    }
+}
+
+// By default, the Kotlin compiler targets Java 6. This means that if you are using Java 8 source compatibility
+// in your Java code, you can’t use Java 8 features, like calling to default interfaces of Java classes, in Kotlin code.
+// This snippet enables Java 8 support for Kotlin in catalog.
+tasks.withType(KotlinCompile).all {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}

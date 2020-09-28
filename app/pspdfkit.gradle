@@ -1,0 +1,12 @@
+repositories {
+    google()
+}
+
+dependencies {
+    // Catalog depends on shared example module which provides the PSPDFKit and its dependencies.
+    implementation project(':shared')
+
+    // OCR library + English language pack.
+    implementation "com.pspdfkit:pspdfkit-ocr:${PSPDFKIT_VERSION}"
+    implementation "com.pspdfkit:pspdfkit-ocr-english:${PSPDFKIT_VERSION}"
+}
