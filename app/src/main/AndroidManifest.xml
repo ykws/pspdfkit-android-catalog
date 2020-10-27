@@ -186,6 +186,11 @@
             android:windowSoftInputMode="adjustNothing"/>
 
         <activity
+            android:name=".examples.java.activities.BasicExampleActivity"
+            android:label="@string/title_activity_basic_example"
+            android:windowSoftInputMode="adjustNothing"/>
+
+        <activity
             android:name=".examples.java.activities.CustomActionsActivity"
             android:label="@string/customActionsExampleTitle"
             android:windowSoftInputMode="adjustNothing"/>

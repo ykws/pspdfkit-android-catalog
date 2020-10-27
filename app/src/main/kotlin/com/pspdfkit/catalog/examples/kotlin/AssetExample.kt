@@ -9,10 +9,12 @@ package com.pspdfkit.catalog.examples.kotlin
 import android.content.Context
 import android.net.Uri
 import androidx.annotation.StringRes
-import com.pspdfkit.configuration.activity.PdfActivityConfiguration
 import com.pspdfkit.catalog.PSPDFExample
+import com.pspdfkit.catalog.examples.java.activities.BasicExampleActivity
 import com.pspdfkit.catalog.tasks.ExtractAssetTask
+import com.pspdfkit.configuration.activity.PdfActivityConfiguration
 import com.pspdfkit.ui.PdfActivity
+import com.pspdfkit.ui.PdfActivityIntentBuilder
 
 /**
  * Opens the [PdfActivity] for viewing a PDF stored within the app's asset folder.
@@ -41,7 +43,18 @@ abstract class AssetExample(context: Context, @StringRes titleRes: Int, @StringR
         ExtractAssetTask.extract(assetPath, title, context) { documentFile ->
             // Now, as the documentFile is sitting in the internal device storage, we can
             // start the PdfActivity by passing it the Uri of the file.
-            PdfActivity.showDocument(context, Uri.fromFile(documentFile), configuration.build())
+
+            //TODO If `PdfActivityConfiguration.Builder#autosaveEnabled` is false,
+            // after sharing, `saveIfModified` return true,
+            // but could not save the document.
+
+            configuration.autosaveEnabled(false)
+            val intent = PdfActivityIntentBuilder.fromUri(context, Uri.fromFile(documentFile))
+                .configuration(configuration.build())
+                .activityClass(BasicExampleActivity::class.java)
+                .build()
+
+            context.startActivity(intent)
         }
     }
 }
